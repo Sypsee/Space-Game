@@ -6,8 +6,8 @@
 
 Universe::Universe()
 {
-    float sunMass = 1000.f;
-    float sunRadius = 500.f;
+    float sunMass = 2000.f;
+    float sunRadius = 1000.f;
     glm::vec3 sunPosition = {0.f, 2.f, 0.f};
     glm::vec3 sunVelocity = {0.f, 0.f, 0.f};
 
@@ -55,7 +55,7 @@ Universe::Universe()
 
     float earthMass = 6.0e-3;
     float earthRadius = 100.f;
-    glm::vec3 earthPosition = {3000.f, 0.f, 0.f};
+    glm::vec3 earthPosition = {2000.f, 0.f, 0.f};
     float gConst = 1.0f;
     float escVelocityMag = std::sqrt(gConst * sunMass / glm::length(earthPosition - sunPosition));
     glm::vec3 earthVelocity = {0.f, escVelocityMag, 0.f};

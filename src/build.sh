@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cp -r ../res ../build/
+
 # Change to the build directory
 cd ../build || { echo "Failed to enter build directory"; exit 1; }
 

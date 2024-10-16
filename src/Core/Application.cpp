@@ -92,7 +92,7 @@ void Application::run()
 		handleInputs();
 		
 		currentFrame = glfwGetTime();
-		dt = std::max(currentFrame - lastFrame, 0.5f);
+		dt = std::max(currentFrame - lastFrame, 0.05f);
 		lastFrame = currentFrame;
 
 		if (m_Window.wasWindowResized())

@@ -11,7 +11,7 @@ uniform bool u_isLightSource;
 
 const vec3 lightPos = vec3(0.0, 0.0, 0.0);
 const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-const float ambientStrength = 0.4;
+const float ambientStrength = 0.1;
 
 vec3 getColorFromHeight(float heightFactor) {
     vec3 waterColor = vec3(0.0, 0.0, 1.0);
