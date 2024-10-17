@@ -22,6 +22,7 @@ private:
     };
 
 	Shader m_Shader;
+    Shader m_DownScaleShader;
 	Buffer m_VBO{ {GL_ARRAY_BUFFER, NULL, sizeof(vertices), GL_STATIC_DRAW}};
 	unsigned int m_VAO=0;
 };

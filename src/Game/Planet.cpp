@@ -30,8 +30,6 @@ Planet::~Planet()
 
 void Planet::Generate()
 {
-    std::cout << "Generating!\n";
-
     m_Vertices.clear();
     m_Indices.clear();
 

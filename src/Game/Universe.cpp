@@ -6,7 +6,7 @@
 
 Universe::Universe()
 {
-    float sunMass = 2000.f;
+    float sunMass = 1000000.f;
     float sunRadius = 1000.f;
     glm::vec3 sunPosition = {0.f, 2.f, 0.f};
     glm::vec3 sunVelocity = {0.f, 0.f, 0.f};
@@ -53,54 +53,59 @@ Universe::Universe()
 
     m_Planets[0]->Generate();
 
-    float earthMass = 6.0e-3;
-    float earthRadius = 100.f;
-    glm::vec3 earthPosition = {2000.f, 0.f, 0.f};
-    float gConst = 1.0f;
-    float escVelocityMag = std::sqrt(gConst * sunMass / glm::length(earthPosition - sunPosition));
-    glm::vec3 earthVelocity = {0.f, escVelocityMag, 0.f};
+    for (int i = 1; i < 10; i++)
+    {
+        float earthMass = rand() % int(1200 - 500) + 500;
+        float earthRadius = rand() % (400 - 100) + 100;
+        float randZ = rand() % int(1300 * (i*2)) - ((int)(sunRadius+earthRadius)+10) + (int)(sunRadius+earthRadius)+10;
+        float randX = rand() % int(1300 * (i*1.5)) - ((int)(sunRadius+earthRadius)+10) + (int)(sunRadius+earthRadius)+10;
+        glm::vec3 earthPosition = {randX, 0.f, randZ};
+        float escVelocityMag = std::sqrt(sunMass / glm::length(earthPosition - sunPosition)) * 0.25;
+        glm::vec3 earthVelocity = {-escVelocityMag, 0.f, 0.07f};
 
-    m_Planets.emplace_back(std::make_unique<Planet>(
-        PlanetCreateInfo{
-            earthPosition,
-            earthVelocity,
-            {0.4f, 0.2f, 0.3f},
-            earthRadius,
-            earthMass,
-            false
-        }
-    ));
+        m_Planets.emplace_back(std::make_unique<Planet>(
+            PlanetCreateInfo{
+                earthPosition,
+                earthVelocity,
+                {(float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX},
+                earthRadius,
+                earthMass,
+                false
+            }
+        ));
 
-	m_Planets[1]->noiseInfo.emplace_back(
-		PlanetNoiseInfo{
-			.enabled = true,
-			.useFirstLayerAsMask = false,
-			.baseRoughness = 6.05,
-			.roughness = 9.6,
-			.persistance = 0.6f,
-			.strength = 0.1,
-			.minValue = 0.45f,
-			.octaves = 5,
-			.isNoiseRigid = false,
-			.center = {96.f, -33.f, 40.f}
-		}
-	);
-	m_Planets[1]->noiseInfo.emplace_back(
-		PlanetNoiseInfo{
-			.enabled = true,
-			.useFirstLayerAsMask = true,
-			.baseRoughness = 4.16,
-			.roughness = 40.65,
-			.persistance = 0.5f,
-			.strength = 0.4f,
-			.minValue = 1.25f,
-			.octaves = 6,
-			.isNoiseRigid = true,
-			.center = {2.85f, 0.8f, 2.1f}
-		}
-	);
+        m_Planets[i]->noiseInfo.emplace_back(
+            PlanetNoiseInfo{
+                .enabled = true,
+                .useFirstLayerAsMask = false,
+                .baseRoughness = 6.05,
+                .roughness = 9.6,
+                .persistance = 0.6f,
+                .strength = 0.1,
+                .minValue = 0.45f,
+                .octaves = 5,
+                .isNoiseRigid = false,
+                .center = {96.f, -33.f, 40.f}
+            }
+        );
+        m_Planets[i]->noiseInfo.emplace_back(
+            PlanetNoiseInfo{
+                .enabled = true,
+                .useFirstLayerAsMask = true,
+                .baseRoughness = 4.16,
+                .roughness = 40.65,
+                .persistance = 0.5f,
+                .strength = 0.4f,
+                .minValue = 1.25f,
+                .octaves = 6,
+                .isNoiseRigid = true,
+                .center = {2.85f, 0.8f, 2.1f}
+            }
+        );
 
-	m_Planets[1]->Generate();
+        m_Planets[i]->Generate();
+    }
+
 
     // ImGui Garbage
 

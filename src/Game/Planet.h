@@ -72,7 +72,7 @@ private:
     Shader m_Shader{};
     unsigned int m_VAO=0;
     
-    inline static glm::vec2 minMax{0.f, 0.f};
+    glm::vec2 minMax{0.f, 0.f};
 
     glm::mat4 model{1};
 

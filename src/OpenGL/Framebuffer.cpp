@@ -12,22 +12,16 @@ Framebuffer::Framebuffer(CreateInfo const &createInfo)
         {
             currentSizeX = createInfo.attachements[i].width;
             currentSizeY = createInfo.attachements[i].height;
+            screenWidth = currentSizeX;
+            screenHeight = currentSizeY;
+            downScaleLevel = createInfo.attachements[i].mipSizeDownscale;
+            chainDepth = createInfo.attachements[i].chainDepth;
 
             unsigned int m_Handle = 0;
             glGenTextures(1, &m_Handle);
             glBindTexture(GL_TEXTURE_2D, m_Handle);
 
-            for (int j = 0; j < createInfo.attachements[i].chainDepth; j++)
-            {
-                glViewport(0, 0, currentSizeX, currentSizeY);
-
-                glTexImage2D(GL_TEXTURE_2D, j, GL_RGB16F, currentSizeX, currentSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-                currentSizeX /= createInfo.attachements[i].mipSizeDownscale;
-                currentSizeY /= createInfo.attachements[i].mipSizeDownscale;
-            }
+            recreateTextureChain();
 
             glViewport(0, 0, createInfo.attachements[i].width, createInfo.attachements[i].height);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -68,6 +62,26 @@ Framebuffer::~Framebuffer() noexcept
     glDeleteTextures(m_TexIDs.size(), m_TexIDs.data());
 }
 
+void Framebuffer::recreateTextureChain()
+{
+    currentSizeX = screenWidth;
+    currentSizeY = screenHeight;
+
+    for (int j = 0; j < chainDepth; j++)
+    {
+        glViewport(0, 0, currentSizeX, currentSizeY);
+
+        glTexImage2D(GL_TEXTURE_2D, j, GL_RGB16F, currentSizeX, currentSizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        currentSizeX /= downScaleLevel;
+        currentSizeY /= downScaleLevel;
+    }
+
+    glViewport(0, 0, screenWidth, screenHeight);
+}
+
 void Framebuffer::bind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FboID);
@@ -84,14 +98,23 @@ void Framebuffer::bindTex(const int i) const
     glBindTexture(GL_TEXTURE_2D, m_TexIDs[i]);
 }
 
+void Framebuffer::bindImage(const int i, const int unit) const
+{
+    this->bindTex(i);
+    glBindImageTexture(unit, m_TexIDs[i], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGB16F);
+}
+
 void Framebuffer::unbind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);   
 }
 
-void Framebuffer::changeRes(const int width, const int height, const int i) const
+void Framebuffer::changeRes(const int width, const int height, const int i)
 {
     this->bind();
+
+    screenWidth = width;
+    screenHeight = height;
 
     if (m_RboIDs.size() >= i)
     {
@@ -103,7 +126,7 @@ void Framebuffer::changeRes(const int width, const int height, const int i) cons
     if (m_TexIDs.size() >= i)
     {
         this->bindTex(i);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        recreateTextureChain();
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 

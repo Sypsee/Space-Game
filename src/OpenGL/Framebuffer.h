@@ -35,12 +35,18 @@ public:
     void bind() const;
     void unbind() const;
     void bindTex(const int i) const;
+    void bindImage(const int i, const int unit) const;
 
-    void changeRes(const int width, const int height, const int i) const;
+    void changeRes(const int width, const int height, const int i);
 
 private:
+    void recreateTextureChain();
+
     unsigned int m_FboID;
     std::vector<unsigned int> m_RboIDs;
     std::vector<unsigned int> m_TexIDs;
+    int chainDepth;
+    int downScaleLevel;
+    unsigned int screenWidth, screenHeight;
     unsigned int currentSizeX, currentSizeY;
 };

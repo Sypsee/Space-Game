@@ -28,7 +28,7 @@ private:
 	Window m_Window{ "Planets LESS GO!", START_WIDTH, START_HEIGHT };
 	inline static Camera cam{glm::vec3(2000, 0, 0)};
 
-	Framebuffer *m_FB;
+	Framebuffer *m_FBdown, *m_FBup;
 	Quad *quad;
 	Universe *universe;
 };

@@ -62,16 +62,28 @@ Application::Application()
     // glDebugMessageCallback(message_callback, nullptr);
 
 
-	m_FB = new Framebuffer(
+	m_FBdown = new Framebuffer(
         Framebuffer::CreateInfo{
             std::span<const Framebuffer::Attachment>{
                 std::array<Framebuffer::Attachment, 2>{
-                    Framebuffer::Attachment{GL_COLOR_ATTACHMENT0, START_WIDTH, START_HEIGHT, 5},
+                    Framebuffer::Attachment{GL_COLOR_ATTACHMENT0, START_WIDTH, START_HEIGHT, 3},
                     Framebuffer::Attachment{GL_DEPTH_ATTACHMENT, START_WIDTH, START_HEIGHT}
                 }
             }
         }
     );
+
+	// m_FBup = new Framebuffer(
+ //        Framebuffer::CreateInfo{
+ //            std::span<const Framebuffer::Attachment>{
+ //                std::array<Framebuffer::Attachment, 2>{
+ //                    Framebuffer::Attachment{GL_COLOR_ATTACHMENT0, 100, 75, 3, 1/2},
+ //                    Framebuffer::Attachment{GL_DEPTH_ATTACHMENT, START_WIDTH, START_HEIGHT}
+ //                }
+ //            }
+ //        }
+ //    );
+
 	quad = new Quad();
 	universe = new Universe();
 }
@@ -100,10 +112,10 @@ void Application::run()
 			m_Window.resetWindowResizeFlag();
 			glViewport(0, 0, m_Window.getWindowRes().x, m_Window.getWindowRes().y);
 			cam.setAspectRatio(m_Window.getWindowRes().x/m_Window.getWindowRes().y);
-			m_FB->changeRes(m_Window.getWindowRes().x, m_Window.getWindowRes().y, 0);
+			m_FBdown->changeRes(m_Window.getWindowRes().x, m_Window.getWindowRes().y, 0);
 		}
 
-		m_FB->bind();
+		m_FBdown->bind();
 
 		glClearColor(0.f, 0.f, 0.f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -111,9 +123,10 @@ void Application::run()
         cam.update(m_Window.getGLFWwindow());
 		universe->Draw(cam.getViewMatrix(), cam.getProjMatrix(), dt);
 
-		m_FB->unbind();
+		m_FBdown->unbind();
 
-		m_FB->bindTex(0);
+        m_FBdown->bindTex(0);
+        m_FBdown->bindImage(0, 0);
 		quad->Draw(m_Window.getWindowRes());
 
 		glfwSwapBuffers(m_Window.getGLFWwindow());
