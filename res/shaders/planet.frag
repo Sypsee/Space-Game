@@ -11,7 +11,7 @@ uniform bool u_isLightSource;
 
 const vec3 lightPos = vec3(0.0, 0.0, 0.0);
 const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-const float ambientStrength = 0.1;
+const float ambientStrength = 0.8;
 
 vec3 getColorFromHeight(float heightFactor) {
     vec3 waterColor = vec3(0.0, 0.0, 1.0);
@@ -44,7 +44,7 @@ void main()
     vec3 finalColor = vec3(1.0);
 
     if (!u_isLightSource) {
-        finalColor = mix(u_color, baseColor, 0.1);
+        finalColor = mix(u_color, baseColor, 0.23);
         vec3 lightDir = normalize(lightPos - fragPos);
         float diff = max(dot(normalize(normal), lightDir), 0.0);
         vec3 diffuse = diff * lightColor;
