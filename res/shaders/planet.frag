@@ -38,13 +38,14 @@ vec3 getColorFromHeight(float heightFactor) {
 
 void main()
 {
-    float heightFactor = smoothstep(u_minMax.x, u_minMax.y, length(fragPos) * 0.20);
+    float heightFactor = smoothstep(u_minMax.x, u_minMax.y, length(fragPos) * 0.3);
     vec3 baseColor = getColorFromHeight(heightFactor);
+    // vec3 baseColor = vec3(1.0);
 
     vec3 finalColor = vec3(1.0);
 
     if (!u_isLightSource) {
-        finalColor = mix(u_color, baseColor, 0.23);
+        finalColor = mix(u_color, baseColor, 0.3);
         vec3 lightDir = normalize(lightPos - fragPos);
         float diff = max(dot(normalize(normal), lightDir), 0.0);
         vec3 diffuse = diff * lightColor;
@@ -53,7 +54,7 @@ void main()
     }
     else
     {
-        finalColor = mix(u_color, baseColor, 0.9);
+        finalColor = mix(u_color, baseColor, 0.85);
     }
 
     fragColor = vec4(finalColor, 1.0);
