@@ -1,4 +1,9 @@
 #include "Shader.h"
+
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include <vector>
 
 
@@ -41,7 +46,7 @@ Shader::~Shader() noexcept
 	DestroyShader();
 }
 
-void Shader::AttachShader(AttachInfo const& attachInfo) const
+void Shader::AttachShader(AttachInfo const& attachInfo)
 {
 	std::string shaderCode;
 	std::ifstream shaderFile;
@@ -70,7 +75,7 @@ void Shader::AttachShader(AttachInfo const& attachInfo) const
 	glAttachShader(m_ProgramID, shader);
 	glLinkProgram(m_ProgramID);
 
-	glDeleteShader(shader);
+    glDeleteShader(shader);
 }
 
 void Shader::DestroyShader()

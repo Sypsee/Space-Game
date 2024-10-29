@@ -6,7 +6,8 @@
 Camera::Camera(glm::vec3 camPos, float FOV, float nearClip, float farClip)
 	:FOV(FOV), nearClip(nearClip), farClip(farClip), cameraPos(camPos)
 {
-	proj = glm::perspective(glm::radians(FOV), 800.f / 600.f, nearClip, farClip);
+	proj = getinfrzproj();
+    inverseProj = glm::inverse(proj);
 }
 
 void Camera::update(GLFWwindow *window)
@@ -89,7 +90,8 @@ void Camera::mouse_callback(double xpos, double ypos)
 void Camera::setAspectRatio(float aspect_ratio)
 {
 	aspectRatio = aspect_ratio;
-	proj = glm::perspective(glm::radians(FOV), aspect_ratio, nearClip, farClip);
+	proj = getinfrzproj();
+    inverseProj = glm::inverse(proj);
 }
 
 void Camera::setPosition(glm::vec3 pos)
@@ -105,6 +107,21 @@ glm::vec3 Camera::getPosition() const
 glm::mat4 Camera::getProjMatrix() const
 {
 	return proj;
+}
+
+glm::mat4 Camera::getInverseProjMatrix() const
+{
+	return inverseProj;
+}
+
+glm::mat4 Camera::getinfrzproj()
+{
+    float f = 1.0f / tan(glm::radians(FOV) / 2.0f);
+    return glm::mat4(
+    f / aspectRatio,    0.0f,  0.0f,  0.0f,
+                  0.0f,    f,  0.0f,  0.0f,
+                  0.0f, 0.0f,  0.0f, -1.0f,
+                  0.0f, 0.0f, 0.1f,  0.0f);
 }
 
 glm::mat4 Camera::getViewMatrix() const

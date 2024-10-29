@@ -36,14 +36,29 @@ Framebuffer::Framebuffer(CreateInfo const &createInfo)
         if (createInfo.attachements[i].attachement == GL_DEPTH_STENCIL_ATTACHMENT || createInfo.attachements[i].attachement == GL_DEPTH_ATTACHMENT)
         {
             unsigned int m_Handle = 0;
-            glGenRenderbuffers(1, &m_Handle);
-            glBindRenderbuffer(GL_RENDERBUFFER, m_Handle);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, createInfo.attachements[i].width, createInfo.attachements[i].height);
-            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            // glGenRenderbuffers(1, &m_Handle);
+            // glBindRenderbuffer(GL_RENDERBUFFER, m_Handle);
+            // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, createInfo.attachements[i].width, createInfo.attachements[i].height);
+            glActiveTexture(GL_TEXTURE1);
+            glGenTextures(1, &m_Handle);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+            glBindTexture(GL_TEXTURE_2D, m_Handle);
+            glTexImage2D(
+              GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, createInfo.attachements[i].width, createInfo.attachements[i].height, 0, 
+              GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL
+            );
+            // glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(GL_TEXTURE0);
 
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, createInfo.attachements[i].attachement, GL_RENDERBUFFER, m_Handle);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_Handle, 0);
+            // glFramebufferRenderbuffer(GL_FRAMEBUFFER, createInfo.attachements[i].attachement, GL_RENDERBUFFER, m_Handle);
 
-            m_RboIDs.push_back(m_Handle);
+            m_DepthTexIDs.push_back(m_Handle);
         }
     }
 
@@ -58,8 +73,8 @@ Framebuffer::Framebuffer(CreateInfo const &createInfo)
 Framebuffer::~Framebuffer() noexcept
 {
     glDeleteFramebuffers(1, &m_FboID);
-    glDeleteRenderbuffers(m_RboIDs.size(), m_RboIDs.data());
     glDeleteTextures(m_TexIDs.size(), m_TexIDs.data());
+    glDeleteTextures(m_DepthTexIDs.size(), m_DepthTexIDs.data());
 }
 
 void Framebuffer::recreateTextureChain()
@@ -100,8 +115,13 @@ void Framebuffer::bindTex(const int i) const
 
 void Framebuffer::bindImage(const int i, const int unit) const
 {
-    this->bindTex(i);
-    glBindImageTexture(unit, m_TexIDs[i], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGB16F);
+    glBindImageTexture(unit, m_TexIDs[i], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA16F);
+}
+
+void Framebuffer::bindDepthTex(const int i) const
+{
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_DepthTexIDs[i]);
 }
 
 void Framebuffer::unbind() const
@@ -116,11 +136,19 @@ void Framebuffer::changeRes(const int width, const int height, const int i)
     screenWidth = width;
     screenHeight = height;
 
-    if (m_RboIDs.size() >= i)
+    if (m_DepthTexIDs.size() >= i)
     {
-        glBindRenderbuffer(GL_RENDERBUFFER, m_RboIDs[i]);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        // glBindRenderbuffer(GL_RENDERBUFFER, m_RboIDs[i]);
+        // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_DepthTexIDs[i]);
+        glTexImage2D(
+          GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, screenWidth, screenHeight, 0, 
+          GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL
+        );
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0);
+        // glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
     
     if (m_TexIDs.size() >= i)

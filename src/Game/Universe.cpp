@@ -7,18 +7,18 @@
 Universe::Universe()
 {
     float sunMass = 1000000.f;
-    float sunRadius = 1000.f;
-    glm::vec3 sunPosition = {0.f, 2.f, 0.f};
+    float sunRadius = 100.f;
+    glm::vec3 sunPosition = {0.f, 0.f, 0.f};
     glm::vec3 sunVelocity = {0.f, 0.f, 0.f};
 
     m_Planets.emplace_back(std::make_unique<Planet>(
         PlanetCreateInfo{
             sunPosition,
             sunVelocity,
-            {4.0f, 4.0f, 3.0f},
+            {1.5f, 1.5f, 0.8f},
             sunRadius,
             sunMass,
-            true
+            false
         }
     ));
 
@@ -53,7 +53,7 @@ Universe::Universe()
 
     m_Planets[0]->Generate();
 
-    for (int i = 1; i < 10; i++)
+    for (int i = 1; i < 0; i++)
     {
         float earthMass = rand() % int(1200 - 500) + 500;
         float earthRadius = rand() % (400 - 100) + 100;

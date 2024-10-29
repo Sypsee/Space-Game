@@ -4,12 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-
 class Shader final
 {
 public:
@@ -31,7 +25,7 @@ public:
 	inline Shader(Shader&& other) noexcept { *this = std::move(other); }
 	~Shader() noexcept;
 	
-	void AttachShader(AttachInfo const& attachInfo) const;
+	void AttachShader(AttachInfo const& attachInfo);
 	void DestroyShader();
 
 	void Bind() const;

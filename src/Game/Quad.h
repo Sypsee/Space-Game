@@ -9,7 +9,7 @@ public:
 	Quad();
 	~Quad();
 	
-	void Draw(glm::vec2 screenExtent);
+	void Draw(glm::vec2 screenExtent, glm::vec3 camPos, glm::mat4 inverseView, glm::mat4 inverseProj);
 
 private:
 	const float vertices[30] = {

@@ -1,4 +1,5 @@
 #include "Application.h"
+#include <iostream>
 
 void Application::mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
@@ -54,12 +55,13 @@ Application::Application()
 	glfwSetCursorPosCallback(m_Window.getGLFWwindow(), mouse_callback);
 
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	glDepthFunc(GL_LESS);
+    glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-	// glEnable(GL_DEBUG_OUTPUT);
-    // glDebugMessageCallback(message_callback, nullptr);
+	glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(message_callback, nullptr);
 
 
 	m_FBdown = new Framebuffer(
@@ -116,18 +118,32 @@ void Application::run()
 		}
 
 		m_FBdown->bind();
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_GREATER);
 
 		glClearColor(0.f, 0.f, 0.f, 1.0f);
+        glClearDepth(0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         cam.update(m_Window.getGLFWwindow());
 		universe->Draw(cam.getViewMatrix(), cam.getProjMatrix(), dt);
 
-		m_FBdown->unbind();
+        glDepthFunc(GL_LESS);
+        glDisable(GL_DEPTH_TEST);
+		
+        m_FBdown->unbind();
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
+        glClear(GL_COLOR_BUFFER_BIT);
 
         m_FBdown->bindTex(0);
         m_FBdown->bindImage(0, 0);
-		quad->Draw(m_Window.getWindowRes());
+        m_FBdown->bindDepthTex(0);
+		quad->Draw(
+             m_Window.getWindowRes(),
+             cam.getPosition(),
+             glm::inverse(cam.getViewMatrix()),
+             cam.getInverseProjMatrix()
+        );
 
 		glfwSwapBuffers(m_Window.getGLFWwindow());
 	}

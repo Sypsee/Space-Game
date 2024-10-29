@@ -26,7 +26,7 @@ private:
 	static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 	Window m_Window{ "Planets LESS GO!", START_WIDTH, START_HEIGHT };
-	inline static Camera cam{glm::vec3(2000, 0, 0)};
+	inline static Camera cam{glm::vec3(0, 0, 150)};
 
 	Framebuffer *m_FBdown, *m_FBup;
 	Quad *quad;
