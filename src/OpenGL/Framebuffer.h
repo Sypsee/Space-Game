@@ -41,7 +41,8 @@ public:
     void changeRes(const int width, const int height, const int i);
 
 private:
-    void recreateTextureChain();
+    void createTextureChain(unsigned int &texId, const bool recreate=false, const GLenum attachment=GL_COLOR_ATTACHMENT0);
+    void createDepthTexture(unsigned int &depthTexID, const bool recreate=false);
 
     unsigned int m_FboID;
     std::vector<unsigned int> m_DepthTexIDs;

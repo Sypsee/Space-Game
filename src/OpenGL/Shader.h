@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
 
 class Shader final
 {
@@ -40,5 +41,7 @@ public:
 
 private:
 	unsigned int GetUniformLocation(const char* u_name);
-	unsigned int m_ProgramID = 0;
+	
+    std::vector<unsigned int> m_Shaders{0};
+    unsigned int m_ProgramID = 0;
 };

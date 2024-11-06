@@ -121,7 +121,7 @@ glm::mat4 Camera::getinfrzproj()
     f / aspectRatio,    0.0f,  0.0f,  0.0f,
                   0.0f,    f,  0.0f,  0.0f,
                   0.0f, 0.0f,  0.0f, -1.0f,
-                  0.0f, 0.0f, 0.1f,  0.0f);
+                  0.0f, 0.0f,nearClip,0.0f);
 }
 
 glm::mat4 Camera::getViewMatrix() const

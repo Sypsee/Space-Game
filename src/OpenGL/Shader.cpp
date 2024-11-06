@@ -4,8 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <vector>
-
 
 void CheckCompileError(unsigned int shader, const char* shaderType)
 {
@@ -75,11 +73,15 @@ void Shader::AttachShader(AttachInfo const& attachInfo)
 	glAttachShader(m_ProgramID, shader);
 	glLinkProgram(m_ProgramID);
 
-    glDeleteShader(shader);
+    m_Shaders.emplace_back(shader);
 }
 
 void Shader::DestroyShader()
 {
+    for (auto& shader : m_Shaders)
+    {
+        glDeleteShader(shader);
+    }
 	glDeleteProgram(m_ProgramID);
 }
 
@@ -95,37 +97,31 @@ void Shader::UnBind() const
 
 void Shader::setF4(const char* u_name, float v1, float v2, float v3, float v4)
 {
-	glUseProgram(m_ProgramID);
 	glUniform4f(GetUniformLocation(u_name), v1, v2, v3, v4);
 }
 
 void Shader::setF(const char* u_name, float v1)
 {
-    glUseProgram(m_ProgramID);
     glUniform1f(GetUniformLocation(u_name), v1);
 }
 
 void Shader::setI(const char* u_name, float v1)
 {
-    glUseProgram(m_ProgramID);
     glUniform1i(GetUniformLocation(u_name), v1);
 }
 
 void Shader::setVec3(const char* u_name, glm::vec3 val)
 {
-    glUseProgram(m_ProgramID);
     glUniform3fv(GetUniformLocation(u_name), 1, glm::value_ptr(val));
 }
 
 void Shader::setVec2(const char* u_name, glm::vec2 val)
 {
-	glUseProgram(m_ProgramID);
 	glUniform2fv(GetUniformLocation(u_name), 1, glm::value_ptr(val));
 }
 
 void Shader::setMat4(const char* u_name, glm::mat4 val)
 {
-    glUseProgram(m_ProgramID);
     glUniformMatrix4fv(GetUniformLocation(u_name), 1, GL_FALSE, glm::value_ptr(val));
 }
 

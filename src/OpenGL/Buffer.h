@@ -32,8 +32,10 @@ public:
 	void Bind() const;
 	void UnBind() const;
 
+    inline unsigned int getHandle() const { return m_BufferID; }
+
 private:
-	unsigned int m_BufferID = 0;
 	GLenum m_Target = 0;
+	unsigned int m_BufferID = 0;
 	GLenum m_Usage = 0;
 };

@@ -4,10 +4,11 @@ Quad::Quad()
 {
 	m_Shader.AttachShader({ "res/shaders/quad.frag", GL_FRAGMENT_SHADER });
 	m_Shader.AttachShader({ "res/shaders/quad.vert", GL_VERTEX_SHADER });
+    m_Shader.Bind();
     m_Shader.setI("screenTex", 0);
     m_Shader.setI("depthTex", 1);
 
-    m_DownScaleShader.AttachShader({"res/shaders/downscale.comp", GL_COMPUTE_SHADER });
+    // m_DownScaleShader.AttachShader({"res/shaders/downscale.comp", GL_COMPUTE_SHADER });
 
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
@@ -29,9 +30,9 @@ Quad::~Quad()
 
 void Quad::Draw(glm::vec2 screenExtent, glm::vec3 camPos, glm::mat4 inverseView, glm::mat4 inverseProj)
 {
-    m_DownScaleShader.Bind();
-    glDispatchCompute((unsigned int)screenExtent.x, (unsigned int)screenExtent.y, 1);
-    glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
+    // m_DownScaleShader.Bind();
+    // glDispatchCompute((unsigned int)screenExtent.x, (unsigned int)screenExtent.y, 1);
+    // glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 
 	m_Shader.Bind();
     m_Shader.setVec2("screenExtent", screenExtent);
@@ -39,12 +40,12 @@ void Quad::Draw(glm::vec2 screenExtent, glm::vec3 camPos, glm::mat4 inverseView,
     m_Shader.setMat4("inverseView", inverseView);
     m_Shader.setMat4("inverseProj", inverseProj);
 
-	glDisable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 	glBindVertexArray(m_VAO);
     glDisable(GL_DEPTH_TEST);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
-	glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
 
 	m_Shader.UnBind();
 }

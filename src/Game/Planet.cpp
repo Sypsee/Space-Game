@@ -6,6 +6,7 @@ Planet::Planet(PlanetCreateInfo const &createInfo)
 {
 	m_Shader.AttachShader({ "res/shaders/planet.frag", GL_FRAGMENT_SHADER });
 	m_Shader.AttachShader({ "res/shaders/planet.vert", GL_VERTEX_SHADER });
+    m_Shader.Bind();
     m_Shader.setVec3("u_color", createInfo.color);
     m_Shader.setI("u_isLightSource", createInfo.isLightSource);
 
@@ -14,7 +15,7 @@ Planet::Planet(PlanetCreateInfo const &createInfo)
 
     model = glm::translate(model, pos);
     
-    glGenVertexArrays(1, &m_VAO);
+    glCreateVertexArrays(1, &m_VAO);
 
     Generate();
 }
@@ -51,9 +52,14 @@ void Planet::Generate()
 	m_VBO.UploadData(m_Vertices.data(), m_Vertices.size() * sizeof(float));
 	m_IBO.UploadData(m_Indices.data(), m_Indices.size() * sizeof(unsigned int));
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	glVertexArrayAttribBinding(m_VAO, 0, 0);
+    glVertexArrayAttribFormat(m_VAO, 1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
+    
+    glVertexArrayVertexBuffer(m_VAO, 0, m_VBO.getHandle(), 0, 3 * sizeof(float));
+    glVertexArrayElementBuffer(m_VAO, m_IBO.getHandle());
 
+    m_Shader.Bind();
     m_Shader.setVec2("u_minMax", minMax);
 }
 
